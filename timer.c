@@ -11,9 +11,9 @@
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
-#define MSEC_PER_SEC  1E3
-#define USEC_PER_SEC  1E9
-#define MSEC_PER_USEC 1E6
+#define MS_PER_S  1E3
+#define US_PER_S  1E9
+#define MS_PER_US 1E6
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
@@ -44,7 +44,7 @@ timer_init(void)
 }
 
 int
-timer_elapsed(unsigned long *ms)
+timer_get_elapsed_ms(unsigned long *ms)
 {
   struct timespec tp;
   int status;
@@ -66,7 +66,7 @@ timespec_diff(const struct timespec *const start, const struct timespec *const e
 {
   if ((end->tv_nsec - start->tv_nsec) < 0) {
     r->tv_sec = end->tv_sec-start->tv_sec - 1;
-    r->tv_nsec = USEC_PER_SEC + end->tv_nsec-start->tv_nsec;
+    r->tv_nsec = US_PER_S + end->tv_nsec-start->tv_nsec;
   } else {
     r->tv_sec = end->tv_sec-start->tv_sec;
     r->tv_nsec = end->tv_nsec-start->tv_nsec;
@@ -81,7 +81,7 @@ get_ms_diff(struct timespec *ts1, struct timespec *ts2)
 
   timespec_diff(ts1, ts2, &diff);
 
-  ms = diff.tv_sec*MSEC_PER_SEC + diff.tv_nsec/MSEC_PER_USEC;
+  ms = diff.tv_sec*MS_PER_S + diff.tv_nsec/MS_PER_US;
 
   return ms;
 }

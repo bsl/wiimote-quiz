@@ -77,7 +77,7 @@ main(int argc, char **argv)
 
     sleep(1);
 
-    if (timer_elapsed(&ms)) {
+    if (timer_get_elapsed_ms(&ms)) {
       print_info("%ld ms elapsed", ms);
     }
   }

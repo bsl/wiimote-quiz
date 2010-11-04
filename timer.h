@@ -2,6 +2,6 @@
 #define __TIMER_H__
 
 int timer_init(void);
-int timer_elapsed(unsigned long *ms);
+int timer_get_elapsed_ms(unsigned long *ms);
 
 #endif
