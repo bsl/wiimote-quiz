@@ -4,7 +4,7 @@ compiler_flags = -O2 -std=c99 -pedantic -W -Wall -Wno-variadic-macros -Waggregat
 
 sources   = $(wildcard *.c)
 headers   = $(wildcard *.h)
-libraries = -lwiiuse -lpthread
+libraries = -lwiiuse -lpthread -lrt
 
 target = quiz
 

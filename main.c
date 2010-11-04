@@ -16,6 +16,7 @@
 #include "ending.h"
 #include "rqueue.h"
 #include "wiimotes.h"
+#include "timer.h"
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
@@ -67,8 +68,16 @@ main(int argc, char **argv)
     return EXIT_FAILURE;
   }
 
+  if (timer_init() == -1) {
+    return EXIT_FAILURE;
+  }
+
   while (1) {
-    sleep(30);
+    unsigned long ms;
+    if (timer_elapsed(&ms) == 0) {
+      printf("%ld ms elapsed\n", ms);
+    }
+    sleep(1);
   }
 
   return EXIT_SUCCESS;
