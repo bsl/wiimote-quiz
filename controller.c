@@ -37,7 +37,7 @@ controller_run(void *v)
     while (!rqueue_is_empty(buttonsq)) {
       b = rqueue_remove(buttonsq);
       handle_button(b, hlcommandsq);
-      free(b);
+      button_event_free(b);
     }
 
     if (ending_get(ending)) {

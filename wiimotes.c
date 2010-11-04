@@ -205,8 +205,7 @@ add_button_event(rqueue_t buttonsq, int id, int button)
 {
   struct button_event *b;
 
-  b = malloc(sizeof(*b));
-
+  b         = button_event_new();
   b->id     = id;
   b->button = button;
 
