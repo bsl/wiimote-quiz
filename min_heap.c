@@ -42,16 +42,16 @@ min_heap_new(void)
   return h;
 }
 
-int
-min_heap_size(min_heap_t h)
-{
-  return h->size;
-}
-
 bool
 min_heap_is_empty(min_heap_t h)
 {
   return h->size == 0;
+}
+
+int
+min_heap_size(min_heap_t h)
+{
+  return h->size;
 }
 
 void
@@ -67,25 +67,14 @@ min_heap_insert(min_heap_t h, int k, void *v)
   h->size++;
 }
 
-void
-min_heap_decrease_key(min_heap_t h, int i, int key)
-{
-  node *nodes = h->nodes;
-  nodes[i].key = key;
-  while (i > 0 && nodes[parent(i)].key > nodes[i].key) {
-    exchange(nodes, i, parent(i));
-    i = parent(i);
-  }
-}
-
 void *
-min_heap_minimum(min_heap_t h)
+min_heap_peek(min_heap_t h)
 {
   return h->nodes[0].value;
 }
 
 void *
-min_heap_remove_min(min_heap_t h)
+min_heap_remove(min_heap_t h)
 {
   void *v = h->nodes[0].value;
   h->size--;
@@ -95,6 +84,17 @@ min_heap_remove_min(min_heap_t h)
   }
   min_heapify(h, 0);
   return v;
+}
+
+void
+min_heap_decrease_key(min_heap_t h, int i, int key)
+{
+  node *nodes = h->nodes;
+  nodes[i].key = key;
+  while (i > 0 && nodes[parent(i)].key > nodes[i].key) {
+    exchange(nodes, i, parent(i));
+    i = parent(i);
+  }
 }
 
 void
