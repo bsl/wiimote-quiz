@@ -68,16 +68,18 @@ main(int argc, char **argv)
     return EXIT_FAILURE;
   }
 
-  if (timer_init() == -1) {
+  if (!timer_init()) {
     return EXIT_FAILURE;
   }
 
   while (1) {
     unsigned long ms;
-    if (timer_elapsed(&ms) == 0) {
-      printf("%ld ms elapsed\n", ms);
-    }
+
     sleep(1);
+
+    if (timer_elapsed(&ms)) {
+      print_info("%ld ms elapsed", ms);
+    }
   }
 
   return EXIT_SUCCESS;

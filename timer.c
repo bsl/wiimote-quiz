@@ -1,9 +1,12 @@
 #define _POSIX_C_SOURCE 199309L /* clock_gettime */
 
+#include <string.h>
+#include <errno.h>
 #include <time.h>
 
 #include <pthread.h>
 
+#include "debug.h"
 #include "timer.h"
 
 /* - - - - - - - - - - - - - - - - - - - - */
@@ -24,7 +27,6 @@ static unsigned long get_ms_diff(struct timespec *ts1, struct timespec *ts2);
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
-/* -1, error, 0 success */
 int
 timer_init(void)
 {
@@ -34,21 +36,27 @@ timer_init(void)
   status = clock_gettime(CLOCK_MONOTONIC, &init_time);
   pthread_mutex_unlock(&mtx);
 
-  return status;
+  if (status == -1) {
+    print_info("clock_gettime: %s", strerror(errno));
+  }
+
+  return status == 0;
 }
 
 int
 timer_elapsed(unsigned long *ms)
 {
-    struct timespec tp;
-    int status;
+  struct timespec tp;
+  int status;
 
-    status = clock_gettime(CLOCK_MONOTONIC, &tp);
-    if (status == 0) {
-      *ms = get_ms_diff(&init_time, &tp);
-    }
+  status = clock_gettime(CLOCK_MONOTONIC, &tp);
+  if (status == -1) {
+    print_info("clock_gettime: %s", strerror(errno));
+  } else if (status == 0) {
+    *ms = get_ms_diff(&init_time, &tp);
+  }
 
-    return status;
+  return status == 0;
 }
 
 /* - - - - - - - - - - - - - - - - - - - - */
