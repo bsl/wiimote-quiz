@@ -3,7 +3,7 @@
 
 enum lowlevel_wiimote_command_type {
   LOWLEVEL_WIIMOTE_COMMAND_SET_LEDS,
-  LOWLEVEL_WIIMOTE_COMMAND_BUZZ
+  LOWLEVEL_WIIMOTE_COMMAND_RUMBLE
 };
 
 struct lowlevel_wiimote_command {
@@ -13,7 +13,7 @@ struct lowlevel_wiimote_command {
 
   union {
     struct { int leds;    } set_leds;
-    struct { bool active; } buzz;
+    struct { bool active; } rumble;
   } parameters;
 };
 

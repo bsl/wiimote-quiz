@@ -35,13 +35,14 @@ controller_run(void *v)
     while (!rqueue_is_empty(buttonsq)) {
       b = rqueue_remove(buttonsq);
       handle_button(b);
+      free(b);
     }
-
-    usleep(10000);
 
     if (ending_get(ending)) {
       break;
     }
+
+    usleep(10000);
   }
 
   return NULL;
@@ -53,5 +54,4 @@ static void
 handle_button(struct button_event *b)
 {
   print_info("button press event: id=%d, button=%d", b->id, b->button);
-  free(b);
 }
