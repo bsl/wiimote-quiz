@@ -16,6 +16,7 @@
 #include "lowlevel_wiimote_command.h"
 #include "min_heap.h"
 #include "queue.h"
+#include "timer.h"
 #include "wiimotes.h"
 
 /* - - - - - - - - - - - - - - - - - - - - */
@@ -35,6 +36,7 @@ static void set_number(wiimotes_t w, int n);
 static void handle_button_event(wiimotes_t w, int n, rqueue_t buttonsq);
 static void add_button_event(rqueue_t rq, int id, int button);
 static void handle_highlevel_wiimote_command(struct highlevel_wiimote_command *c, min_heap_t lowlevel_commandsq);
+static void enqueue_lowlevel_wiimote_command(const struct lowlevel_wiimote_command *c, min_heap_t lowlevel_commandsq);
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
@@ -188,8 +190,44 @@ add_button_event(rqueue_t buttonsq, int id, int button)
 }
 
 static void
-handle_highlevel_wiimote_command(struct highlevel_wiimote_command *c, min_heap_t lowlevel_commandsq)
+handle_highlevel_wiimote_command(struct highlevel_wiimote_command *hlc, min_heap_t lowlevel_commandsq)
 {
-  (void)c;
-  (void)lowlevel_commandsq;
+  struct lowlevel_wiimote_command llc;
+  unsigned long t;
+
+  switch (hlc->type) {
+    case HIGHLEVEL_WIIMOTE_COMMAND_FLASH:
+      break;
+
+    case HIGHLEVEL_WIIMOTE_COMMAND_BUZZ:  /* XXX ignoring pattern_num parameter for now */
+      timer_get_elapsed_ms(&t);
+
+      llc.wiimote_num = hlc->wiimote_num;
+      llc.type        = LOWLEVEL_WIIMOTE_COMMAND_BUZZ;
+
+      /* turn buzz on */
+      llc.when_to_send           = t;
+      llc.parameters.buzz.active = true;
+      enqueue_lowlevel_wiimote_command(&llc, lowlevel_commandsq);
+
+      /* turn buzz off */
+      llc.when_to_send           = t + 1000;
+      llc.parameters.buzz.active = false;
+      enqueue_lowlevel_wiimote_command(&llc, lowlevel_commandsq);
+
+      break;
+  }
+
+  free(hlc);
+}
+
+static void
+enqueue_lowlevel_wiimote_command(const struct lowlevel_wiimote_command *c, min_heap_t lowlevel_commandsq)
+{
+  struct lowlevel_wiimote_command *d;
+
+  d = malloc(sizeof(*d));
+  memcpy(d, c, sizeof(*d));
+
+  min_heap_insert(lowlevel_commandsq, (int)d->when_to_send, d);
 }

@@ -7,8 +7,8 @@ enum highlevel_wiimote_command_type {
 };
 
 struct highlevel_wiimote_command {
-  enum highlevel_wiimote_command_type type;
   int wiimote_num;
+  enum highlevel_wiimote_command_type type;
 
   union {
     struct { int pattern_num; } buzz;

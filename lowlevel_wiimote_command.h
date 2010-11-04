@@ -7,8 +7,8 @@ enum lowlevel_wiimote_command_type {
 };
 
 struct lowlevel_wiimote_command {
-  enum lowlevel_wiimote_command_type type;
   int wiimote_num;
+  enum lowlevel_wiimote_command_type type;
   unsigned long when_to_send;  /* ms since timer_init */
 
   union {
