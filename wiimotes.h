@@ -10,7 +10,7 @@ struct wiimotes_run_args {
   ending_t ending;
   unsigned int max_num_wiimotes;
   unsigned int find_time_in_sec;
-  rqueue_t buttonsq;
+  rqueue_t buttonsq, commandsq;
 };
 
 void *wiimotes_run(void *);

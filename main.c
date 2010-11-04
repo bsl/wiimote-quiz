@@ -62,6 +62,7 @@ main(int argc, char **argv)
   w_args.max_num_wiimotes = WIIMOTES_MAX_NUM;
   w_args.find_time_in_sec = WIIMOTES_FIND_TIME_IN_SEC;
   w_args.buttonsq         = g.buttonsq;
+  w_args.commandsq        = g.commandsq;
   pthread_create(&g.threads[0], NULL, wiimotes_run, &w_args);
 
   if (!install_SIGINT_handler()) {

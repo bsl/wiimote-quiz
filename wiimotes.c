@@ -12,6 +12,8 @@
 
 #include "button_event.h"
 #include "ending.h"
+#include "highlevel_wiimote_command.h"
+#include "min_heap.h"
 #include "queue.h"
 #include "wiimotes.h"
 
@@ -29,8 +31,9 @@ static void deinit(wiimotes_t w);
 static void associate(wiimotes_t w, unsigned int find_time_in_sec);
 static void set_all_numbers(wiimotes_t w);
 static void set_number(wiimotes_t w, int n);
-static void handle_event(wiimotes_t w, int n, rqueue_t buttonsq);
+static void handle_button_event(wiimotes_t w, int n, rqueue_t buttonsq);
 static void add_button_event(rqueue_t rq, int id, int button);
+static void handle_highlevel_wiimote_command(struct highlevel_wiimote_command *c, min_heap_t lowlevel_commandsq);
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
@@ -39,7 +42,8 @@ wiimotes_run(void *v)
 {
   struct wiimotes_run_args *args;
   wiimotes_t w;
-  rqueue_t buttonsq;
+  rqueue_t buttonsq, highlevel_commandsq;
+  min_heap_t lowlevel_commandsq;
   int i, num_events;
   unsigned int max_num_wiimotes;
   unsigned int find_time_in_sec;
@@ -47,23 +51,38 @@ wiimotes_run(void *v)
 
   args = v;
 
-  ending           = args->ending;
-  max_num_wiimotes = args->max_num_wiimotes;
-  find_time_in_sec = args->max_num_wiimotes;
-  buttonsq         = args->buttonsq;
+  ending              = args->ending;
+  max_num_wiimotes    = args->max_num_wiimotes;
+  find_time_in_sec    = args->max_num_wiimotes;
+  buttonsq            = args->buttonsq;
+  highlevel_commandsq = args->commandsq;
 
   w = init(max_num_wiimotes);
   associate(w, find_time_in_sec);
 
   while (1) {
+    /* Relay incoming button events from the wiimotes to the controller via the
+     * buttons queue.
+     */
     num_events = wiiuse_poll(w->wiimotes, w->size);
-
     for (i=0; num_events>0 && i<w->size; i++) {
       if (w->wiimotes[i]->event == WIIUSE_EVENT) {
-        handle_event(w, i, buttonsq);
+        handle_button_event(w, i, buttonsq);
         num_events--;
       }
     }
+
+    /* Translate high-level commands from the controller to low-level commands
+     * to be sent to the wiimotes.
+     */
+    while (!rqueue_is_empty(highlevel_commandsq)) {
+      struct highlevel_wiimote_command *c = rqueue_remove(highlevel_commandsq);
+      handle_highlevel_wiimote_command(c, lowlevel_commandsq);
+    }
+
+    /* Send low-level commands whose times have arrived to the wiimotes.
+     */
+    // ...
 
     usleep(10000);
 
@@ -133,7 +152,7 @@ set_number(wiimotes_t w, int n)
 }
 
 static void
-handle_event(wiimotes_t w, int n, rqueue_t buttonsq)
+handle_button_event(wiimotes_t w, int n, rqueue_t buttonsq)
 {
   struct wiimote_t *wm;
   int id;
@@ -165,4 +184,11 @@ add_button_event(rqueue_t buttonsq, int id, int button)
   b->button = button;
 
   rqueue_add(buttonsq, b);
+}
+
+static void
+handle_highlevel_wiimote_command(struct highlevel_wiimote_command *c, min_heap_t lowlevel_commandsq)
+{
+  (void)c;
+  (void)lowlevel_commandsq;
 }
