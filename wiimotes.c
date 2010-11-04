@@ -13,6 +13,7 @@
 #include "button_event.h"
 #include "ending.h"
 #include "highlevel_wiimote_command.h"
+#include "lowlevel_wiimote_command.h"
 #include "min_heap.h"
 #include "queue.h"
 #include "wiimotes.h"
