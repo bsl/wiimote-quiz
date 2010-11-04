@@ -16,7 +16,6 @@
 /* - - - - - - - - - - - - - - - - - - - - */
 
 static void handle_button(struct button_event *b, rqueue_t hlcommandsq);
-static void insert_highlevel_wiimote_command(const struct highlevel_wiimote_command *hlc, rqueue_t hlcommandsq);
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
@@ -56,24 +55,15 @@ controller_run(void *v)
 static void
 handle_button(struct button_event *b, rqueue_t hlcommandsq)
 {
-  struct highlevel_wiimote_command hlc;
+  struct highlevel_wiimote_command *hlc;
 
   print_info("button press event: id=%d, button=%d", b->id, b->button);
 
-  hlc.wiimote_num                  = b->id;
-  hlc.type                         = HIGHLEVEL_WIIMOTE_COMMAND_FLASH;
-  hlc.parameters.flash.pattern_num = 0;
+  /* flash leds in response to button press */
+  hlc                               = highlevel_wiimote_command_new();
+  hlc->wiimote_num                  = b->id;
+  hlc->type                         = HIGHLEVEL_WIIMOTE_COMMAND_FLASH;
+  hlc->parameters.flash.pattern_num = 0;
 
-  insert_highlevel_wiimote_command(&hlc, hlcommandsq);
-}
-
-static void
-insert_highlevel_wiimote_command(const struct highlevel_wiimote_command *hlc, rqueue_t hlcommandsq)
-{
-  struct highlevel_wiimote_command *d;
-
-  d = malloc(sizeof(*d));
-  memcpy(d, hlc, sizeof(*d));
-
-  rqueue_add(hlcommandsq, d);
+  rqueue_add(hlcommandsq, hlc);
 }

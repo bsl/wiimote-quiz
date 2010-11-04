@@ -3,7 +3,8 @@
 
 enum highlevel_wiimote_command_type {
   HIGHLEVEL_WIIMOTE_COMMAND_FLASH,
-  HIGHLEVEL_WIIMOTE_COMMAND_RUMBLE
+  HIGHLEVEL_WIIMOTE_COMMAND_RUMBLE,
+  HIGHLEVEL_WIIMOTE_COMMAND_UNKNOWN
 };
 
 struct highlevel_wiimote_command {
@@ -15,5 +16,8 @@ struct highlevel_wiimote_command {
     struct { int pattern_num; } flash;
   } parameters;
 };
+
+struct highlevel_wiimote_command *highlevel_wiimote_command_new(void);
+void highlevel_wiimote_command_free(struct highlevel_wiimote_command *);
 
 #endif
