@@ -32,7 +32,7 @@ static void handle_sigint(int);
 
 struct {
   ending_t ending;
-  rqueue_t buttonsq, commandsq;
+  rqueue_t buttonsq, hlcommandsq;
   pthread_t threads[2];
 } g;
 
@@ -47,14 +47,14 @@ main(int argc, char **argv)
   (void)argc;
   (void)argv;
 
-  g.ending    = ending_new(false);
-  g.buttonsq  = rqueue_new();
-  g.commandsq = rqueue_new();
+  g.ending      = ending_new(false);
+  g.buttonsq    = rqueue_new();
+  g.hlcommandsq = rqueue_new();
 
   /* start controller thread */
-  c_args.ending    = g.ending;
-  c_args.buttonsq  = g.buttonsq;
-  c_args.commandsq = g.commandsq;
+  c_args.ending      = g.ending;
+  c_args.buttonsq    = g.buttonsq;
+  c_args.hlcommandsq = g.hlcommandsq;
   pthread_create(&g.threads[1], NULL, controller_run, &c_args);
 
   /* start wiimotes thread */
@@ -62,7 +62,7 @@ main(int argc, char **argv)
   w_args.max_num_wiimotes = WIIMOTES_MAX_NUM;
   w_args.find_time_in_sec = WIIMOTES_FIND_TIME_IN_SEC;
   w_args.buttonsq         = g.buttonsq;
-  w_args.commandsq        = g.commandsq;
+  w_args.hlcommandsq      = g.hlcommandsq;
   pthread_create(&g.threads[0], NULL, wiimotes_run, &w_args);
 
   if (!install_SIGINT_handler()) {
@@ -122,7 +122,7 @@ handle_sigint(int signum)
 
   ending_free(g.ending);
   rqueue_free(g.buttonsq);
-  rqueue_free(g.commandsq);
+  rqueue_free(g.hlcommandsq);
 
   print_info("SIGINT handler exiting");
   exit(EXIT_SUCCESS);

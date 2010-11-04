@@ -3,17 +3,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "button_event.h"
 #include "controller.h"
 #include "debug.h"
 #include "ending.h"
+#include "highlevel_wiimote_command.h"
 #include "rqueue.h"
 #include "wiimotes.h"
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
-static void handle_button(struct button_event *b);
+static void handle_button(struct button_event *b, rqueue_t hlcommandsq);
+static void insert_highlevel_wiimote_command(const struct highlevel_wiimote_command *hlc, rqueue_t hlcommandsq);
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
@@ -21,20 +24,20 @@ void *
 controller_run(void *v)
 {
   struct controller_run_args *args;
-  rqueue_t buttonsq, commandsq;
+  rqueue_t buttonsq, hlcommandsq;
   ending_t ending;
   struct button_event *b;
 
   args = v;
 
-  ending    = args->ending;
-  buttonsq  = args->buttonsq;
-  commandsq = args->commandsq;
+  ending      = args->ending;
+  buttonsq    = args->buttonsq;
+  hlcommandsq = args->hlcommandsq;
 
   while (1) {
     while (!rqueue_is_empty(buttonsq)) {
       b = rqueue_remove(buttonsq);
-      handle_button(b);
+      handle_button(b, hlcommandsq);
       free(b);
     }
 
@@ -51,7 +54,26 @@ controller_run(void *v)
 /* - - - - - - - - - - - - - - - - - - - - */
 
 static void
-handle_button(struct button_event *b)
+handle_button(struct button_event *b, rqueue_t hlcommandsq)
 {
+  struct highlevel_wiimote_command hlc;
+
   print_info("button press event: id=%d, button=%d", b->id, b->button);
+
+  hlc.wiimote_num                  = b->id;
+  hlc.type                         = HIGHLEVEL_WIIMOTE_COMMAND_FLASH;
+  hlc.parameters.flash.pattern_num = 0;
+
+  insert_highlevel_wiimote_command(&hlc, hlcommandsq);
+}
+
+static void
+insert_highlevel_wiimote_command(const struct highlevel_wiimote_command *hlc, rqueue_t hlcommandsq)
+{
+  struct highlevel_wiimote_command *d;
+
+  d = malloc(sizeof(*d));
+  memcpy(d, hlc, sizeof(*d));
+
+  rqueue_add(hlcommandsq, d);
 }
