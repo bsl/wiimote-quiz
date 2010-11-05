@@ -9,7 +9,7 @@
 #include "controller.h"
 #include "debug.h"
 #include "ending.h"
-#include "highlevel_wiimote_command.h"
+#include "highlevel_command.h"
 #include "rqueue.h"
 #include "wiimotes.h"
 
@@ -55,14 +55,14 @@ controller_run(void *v)
 static void
 handle_button(struct button_event *b, rqueue_t hlcommandsq)
 {
-  struct highlevel_wiimote_command *hlc;
+  struct highlevel_command *hlc;
 
   print_info("button press event: id=%d, button=%d", b->id, b->button);
 
   /* flash leds in response to button press */
-  hlc                               = highlevel_wiimote_command_new();
+  hlc                               = highlevel_command_new();
   hlc->wiimote_num                  = b->id;
-  hlc->type                         = HIGHLEVEL_WIIMOTE_COMMAND_FLASH;
+  hlc->type                         = HIGHLEVEL_COMMAND_FLASH;
   hlc->parameters.flash.pattern_num = 0;
 
   rqueue_add(hlcommandsq, hlc);
