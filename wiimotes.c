@@ -159,7 +159,7 @@ set_leds_by_wiimote_num(int wiimote_num, min_heap_t llcommandsq)
   llc->when_to_send             = t;
   llc->parameters.set_leds.leds = calc_leds_by_wiimote_num(wiimote_num);
 
-  min_heap_insert(llcommandsq, (int)llc->when_to_send, llc);
+  min_heap_add(llcommandsq, (int)llc->when_to_send, llc);
 }
 
 static int
@@ -228,7 +228,7 @@ handle_highlevel_wiimote_command(struct highlevel_wiimote_command *hlc, min_heap
       llc->type                     = LOWLEVEL_WIIMOTE_COMMAND_SET_LEDS;
       llc->when_to_send             = t;
       llc->parameters.set_leds.leds = 0;
-      min_heap_insert(llcommandsq, (int)llc->when_to_send, llc);
+      min_heap_add(llcommandsq, (int)llc->when_to_send, llc);
 
       /* turn all leds on */
       llc                           = lowlevel_wiimote_command_new();
@@ -236,7 +236,7 @@ handle_highlevel_wiimote_command(struct highlevel_wiimote_command *hlc, min_heap
       llc->type                     = LOWLEVEL_WIIMOTE_COMMAND_SET_LEDS;
       llc->when_to_send             = t + 50;
       llc->parameters.set_leds.leds = WIIMOTE_LED_1 | WIIMOTE_LED_2 | WIIMOTE_LED_3 | WIIMOTE_LED_4;
-      min_heap_insert(llcommandsq, (int)llc->when_to_send, llc);
+      min_heap_add(llcommandsq, (int)llc->when_to_send, llc);
 
       /* set leds back to wiimote id in binary */
       llc                           = lowlevel_wiimote_command_new();
@@ -244,7 +244,7 @@ handle_highlevel_wiimote_command(struct highlevel_wiimote_command *hlc, min_heap
       llc->type                     = LOWLEVEL_WIIMOTE_COMMAND_SET_LEDS;
       llc->when_to_send             = t + 50 + 200;
       llc->parameters.set_leds.leds = calc_leds_by_wiimote_num(llc->wiimote_num);
-      min_heap_insert(llcommandsq, (int)llc->when_to_send, llc);
+      min_heap_add(llcommandsq, (int)llc->when_to_send, llc);
 
       break;
 
@@ -257,7 +257,7 @@ handle_highlevel_wiimote_command(struct highlevel_wiimote_command *hlc, min_heap
       llc->type                     = LOWLEVEL_WIIMOTE_COMMAND_RUMBLE;
       llc->when_to_send             = t;
       llc->parameters.rumble.active = true;
-      min_heap_insert(llcommandsq, (int)llc->when_to_send, llc);
+      min_heap_add(llcommandsq, (int)llc->when_to_send, llc);
 
       /* turn rumble off */
       llc                           = lowlevel_wiimote_command_new();
@@ -265,7 +265,7 @@ handle_highlevel_wiimote_command(struct highlevel_wiimote_command *hlc, min_heap
       llc->type                     = LOWLEVEL_WIIMOTE_COMMAND_RUMBLE;
       llc->when_to_send             = t + 1000;
       llc->parameters.rumble.active = false;
-      min_heap_insert(llcommandsq, (int)llc->when_to_send, llc);
+      min_heap_add(llcommandsq, (int)llc->when_to_send, llc);
 
       break;
 

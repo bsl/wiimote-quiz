@@ -55,7 +55,7 @@ min_heap_size(min_heap_t h)
 }
 
 void
-min_heap_insert(min_heap_t h, int k, void *v)
+min_heap_add(min_heap_t h, int k, void *v)
 {
   if (h->size + 1 > h->avail) {
     min_heap_grow(h);
