@@ -17,7 +17,7 @@ struct highlevel_wiimote_command {
   } parameters;
 };
 
-struct highlevel_wiimote_command *highlevel_wiimote_command_new(void);
-void highlevel_wiimote_command_free(struct highlevel_wiimote_command *);
+struct highlevel_wiimote_command * highlevel_wiimote_command_new  (void);
+void                               highlevel_wiimote_command_free (struct highlevel_wiimote_command *);
 
 #endif

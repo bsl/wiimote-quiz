@@ -6,8 +6,7 @@
 
 struct controller_run_args {
   ending_t ending;
-  rqueue_t buttonsq;
-  rqueue_t hlcommandsq;
+  rqueue_t buttonsq, hlcommandsq;
 };
 
 void *controller_run(void *);

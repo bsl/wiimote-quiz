@@ -20,7 +20,7 @@ struct lowlevel_wiimote_command {
   } parameters;
 };
 
-struct lowlevel_wiimote_command *lowlevel_wiimote_command_new(void);
-void lowlevel_wiimote_command_free(struct lowlevel_wiimote_command *);
+struct lowlevel_wiimote_command *lowlevel_wiimote_command_new  (void);
+void                             lowlevel_wiimote_command_free (struct lowlevel_wiimote_command *);
 
 #endif

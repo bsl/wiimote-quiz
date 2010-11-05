@@ -3,6 +3,8 @@
 
 #include "button_event.h"
 
+/* - - - - - - - - - - - - - - - - - - - - */
+
 struct button_event *
 button_event_new(void)
 {

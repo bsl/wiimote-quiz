@@ -6,7 +6,7 @@ struct button_event {
   int button;
 };
 
-struct button_event *button_event_new(void);
-void button_event_free(struct button_event *);
+struct button_event * button_event_new  (void);
+void                  button_event_free (struct button_event *);
 
 #endif

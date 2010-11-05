@@ -3,6 +3,8 @@
 
 #include "highlevel_wiimote_command.h"
 
+/* - - - - - - - - - - - - - - - - - - - - */
+
 struct highlevel_wiimote_command *
 highlevel_wiimote_command_new(void)
 {
