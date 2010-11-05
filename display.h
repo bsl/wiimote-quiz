@@ -7,6 +7,7 @@
 
 struct display_run_args {
   ending_t ending;
+  /* XXX controller state */
 };
 
 /* - - - - - - - - - - - - - - - - - - - - */
