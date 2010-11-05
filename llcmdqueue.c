@@ -67,4 +67,5 @@ void
 llcmdqueue_free(llcmdqueue_t q)
 {
   min_heap_free(q->heap);
+  free(q);
 }
