@@ -35,7 +35,7 @@ static void set_leds_by_wiimote_num(int num, min_heap_t llcommandsq);
 static int calc_leds_by_wiimote_num(int);
 static void handle_button_event(wiimotes_t w, int n, rqueue_t buttonsq);
 static void add_button_event(rqueue_t rq, int id, int button);
-static void handle_highlevel_command(struct highlevel_command *hlc, min_heap_t llcommandsq);
+static void handle_highlevel_command(const struct highlevel_command *hlc, min_heap_t llcommandsq);
 static void handle_lowlevel_command(const struct lowlevel_command *llc, wiimotes_t w);
 
 /* - - - - - - - - - - - - - - - - - - - - */
@@ -213,7 +213,7 @@ add_button_event(rqueue_t buttonsq, int id, int button)
 }
 
 static void
-handle_highlevel_command(struct highlevel_command *hlc, min_heap_t llcommandsq)
+handle_highlevel_command(const struct highlevel_command *hlc, min_heap_t llcommandsq)
 {
   struct lowlevel_command *llc;
   unsigned long t;
