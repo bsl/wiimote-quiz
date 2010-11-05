@@ -13,10 +13,11 @@
 
 #include "controller.h"
 #include "debug.h"
+#include "display.h"
 #include "ending.h"
 #include "rqueue.h"
-#include "wiimotes.h"
 #include "timer.h"
+#include "wiimotes.h"
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
@@ -33,7 +34,7 @@ static void handle_sigint(int);
 struct {
   ending_t ending;
   rqueue_t buttonsq, hlcommandsq;
-  pthread_t threads[2];
+  pthread_t threads[3];
 } g;
 
 /* - - - - - - - - - - - - - - - - - - - - */
@@ -41,8 +42,9 @@ struct {
 int
 main(int argc, char **argv)
 {
-  struct wiimotes_run_args   w_args;
   struct controller_run_args c_args;
+  struct wiimotes_run_args   w_args;
+  struct display_run_args    d_args;
 
   (void)argc;
   (void)argv;
@@ -55,7 +57,7 @@ main(int argc, char **argv)
   c_args.ending      = g.ending;
   c_args.buttonsq    = g.buttonsq;
   c_args.hlcommandsq = g.hlcommandsq;
-  pthread_create(&g.threads[1], NULL, controller_run, &c_args);
+  pthread_create(&g.threads[0], NULL, controller_run, &c_args);
 
   /* start wiimotes thread */
   w_args.ending           = g.ending;
@@ -63,7 +65,10 @@ main(int argc, char **argv)
   w_args.find_time_in_sec = WIIMOTES_FIND_TIME_IN_SEC;
   w_args.buttonsq         = g.buttonsq;
   w_args.hlcommandsq      = g.hlcommandsq;
-  pthread_create(&g.threads[0], NULL, wiimotes_run, &w_args);
+  pthread_create(&g.threads[1], NULL, wiimotes_run, &w_args);
+
+  /* start display thread */
+  pthread_create(&g.threads[2], NULL, display_run, &d_args);
 
   if (!install_SIGINT_handler()) {
     return EXIT_FAILURE;
