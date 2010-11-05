@@ -9,6 +9,8 @@ struct display_run_args {
   ending_t ending;
 };
 
+/* - - - - - - - - - - - - - - - - - - - - */
+
 void *display_run(void *);
 
 #endif

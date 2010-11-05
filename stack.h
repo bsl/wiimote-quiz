@@ -3,7 +3,11 @@
 
 #include <stdbool.h>
 
+/* - - - - - - - - - - - - - - - - - - - - */
+
 typedef struct stack * stack_t;
+
+/* - - - - - - - - - - - - - - - - - - - - */
 
 stack_t stack_new      (void);
 bool    stack_is_empty (stack_t);

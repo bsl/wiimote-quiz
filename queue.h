@@ -3,7 +3,11 @@
 
 #include <stdbool.h>
 
+/* - - - - - - - - - - - - - - - - - - - - */
+
 typedef struct queue * queue_t;
+
+/* - - - - - - - - - - - - - - - - - - - - */
 
 queue_t queue_new      (void);
 bool    queue_is_empty (queue_t);

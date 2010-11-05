@@ -3,7 +3,11 @@
 
 #include <stdbool.h>
 
+/* - - - - - - - - - - - - - - - - - - - - */
+
 typedef struct rqueue * rqueue_t;
+
+/* - - - - - - - - - - - - - - - - - - - - */
 
 rqueue_t rqueue_new      (void);
 bool     rqueue_is_empty (rqueue_t);

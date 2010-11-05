@@ -3,7 +3,11 @@
 
 #include <stdbool.h>
 
+/* - - - - - - - - - - - - - - - - - - - - */
+
 typedef struct min_heap * min_heap_t;
+
+/* - - - - - - - - - - - - - - - - - - - - */
 
 min_heap_t min_heap_new          (void);
 bool       min_heap_is_empty     (min_heap_t);

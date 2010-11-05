@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 
+/* - - - - - - - - - - - - - - - - - - - - */
+
 enum lowlevel_wiimote_command_type {
   LOWLEVEL_WIIMOTE_COMMAND_SET_LEDS,
   LOWLEVEL_WIIMOTE_COMMAND_RUMBLE,
@@ -19,6 +21,8 @@ struct lowlevel_wiimote_command {
     struct { bool active; } rumble;
   } parameters;
 };
+
+/* - - - - - - - - - - - - - - - - - - - - */
 
 struct lowlevel_wiimote_command *lowlevel_wiimote_command_new  (void);
 void                             lowlevel_wiimote_command_free (struct lowlevel_wiimote_command *);
