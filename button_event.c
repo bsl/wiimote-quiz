@@ -6,11 +6,13 @@
 /* - - - - - - - - - - - - - - - - - - - - */
 
 struct button_event *
-button_event_new(void)
+button_event_new(int id, int button)
 {
   struct button_event *b;
 
   b = malloc(sizeof(*b));
+  b->id = id;
+  b->button = button;
 
   return b;
 }

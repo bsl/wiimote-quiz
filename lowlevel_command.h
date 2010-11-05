@@ -14,7 +14,6 @@ enum lowlevel_command_type {
 struct lowlevel_command {
   int wiimote_num;
   enum lowlevel_command_type type;
-  unsigned long when_to_send;  /* ms since timer_init */
 
   union {
     struct { int leds;    } set_leds;
@@ -24,7 +23,7 @@ struct lowlevel_command {
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
-struct lowlevel_command * lowlevel_command_new  (void);
+struct lowlevel_command * lowlevel_command_new  (int wiimote_num, enum lowlevel_command_type type);
 void                      lowlevel_command_free (struct lowlevel_command *);
 
 #endif

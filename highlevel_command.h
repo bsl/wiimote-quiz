@@ -19,7 +19,7 @@ struct highlevel_command {
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
-struct highlevel_command * highlevel_command_new  (void);
+struct highlevel_command * highlevel_command_new(int wiimote_num, enum highlevel_command_type type);
 void                       highlevel_command_free (struct highlevel_command *);
 
 #endif

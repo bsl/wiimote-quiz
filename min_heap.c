@@ -2,12 +2,13 @@
 #include <stdbool.h>
 #include <limits.h>
 
+#include "debug.h"
 #include "min_heap.h"
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
 typedef struct {
-  int key;
+  unsigned long key;
   void *value;
 } node;
 
@@ -55,7 +56,7 @@ min_heap_size(min_heap_t h)
 }
 
 void
-min_heap_add(min_heap_t h, int k, void *v)
+min_heap_add(min_heap_t h, unsigned long k, void *v)
 {
   if (h->size + 1 > h->avail) {
     min_heap_grow(h);
@@ -73,6 +74,12 @@ min_heap_peek(min_heap_t h)
   return h->nodes[0].value;
 }
 
+unsigned long
+min_heap_peek_key(min_heap_t h)
+{
+  return h->nodes[0].key;
+}
+
 void *
 min_heap_remove(min_heap_t h)
 {
@@ -87,7 +94,7 @@ min_heap_remove(min_heap_t h)
 }
 
 void
-min_heap_decrease_key(min_heap_t h, int i, int key)
+min_heap_decrease_key(min_heap_t h, int i, unsigned long key)
 {
   node *nodes = h->nodes;
   nodes[i].key = key;

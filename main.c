@@ -21,7 +21,7 @@
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
-#define WIIMOTES_MAX_NUM          15
+#define WIIMOTES_MAX_NUM          16
 #define WIIMOTES_FIND_TIME_IN_SEC 4
 
 /* - - - - - - - - - - - - - - - - - - - - */
@@ -68,6 +68,7 @@ main(int argc, char **argv)
   pthread_create(&g.threads[1], NULL, wiimotes_run, &w_args);
 
   /* start display thread */
+  d_args.ending           = g.ending;
   pthread_create(&g.threads[2], NULL, display_run, &d_args);
 
   if (!install_SIGINT_handler()) {
@@ -81,7 +82,7 @@ main(int argc, char **argv)
   while (1) {
     unsigned long ms;
 
-    sleep(1);
+    sleep(5);
 
     if (timer_get_elapsed_ms(&ms)) {
       print_info("%ld ms elapsed", ms);
