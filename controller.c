@@ -104,15 +104,19 @@ handle_button(struct button_event *b, rqueue_t hlcommandsq)
   }
 }
 
-static void flash_leds(struct button_event *b, rqueue_t hlcommandsq) {
+static void flash_leds(struct button_event *b, rqueue_t hlcommandsq)
+{
   struct highlevel_command *hlc;
+
   hlc = highlevel_command_new(b->id, HIGHLEVEL_COMMAND_FLASH);
   hlc->parameters.flash.pattern_num = 0;
   rqueue_add(hlcommandsq, hlc);
 }
 
-static void rumble(struct button_event *b, rqueue_t hlcommandsq) {
+static void rumble(struct button_event *b, rqueue_t hlcommandsq)
+{
   struct highlevel_command *hlc;
+
   hlc = highlevel_command_new(b->id, HIGHLEVEL_COMMAND_RUMBLE);
   hlc->parameters.rumble.pattern_num = 0;
   rqueue_add(hlcommandsq, hlc);
