@@ -4,6 +4,7 @@
 #include <unistd.h>
 
 #include "controller.h"
+#include "controller_state.h"
 #include "display.h"
 #include "ending.h"
 

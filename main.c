@@ -15,14 +15,10 @@
 #include "debug.h"
 #include "display.h"
 #include "ending.h"
+#include "main.h"
 #include "rqueue.h"
 #include "timer.h"
 #include "wiimotes.h"
-
-/* - - - - - - - - - - - - - - - - - - - - */
-
-#define WIIMOTES_MAX_NUM          16
-#define WIIMOTES_FIND_TIME_IN_SEC 4
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
