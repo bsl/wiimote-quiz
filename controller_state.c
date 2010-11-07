@@ -5,6 +5,7 @@
 #include <pthread.h>
 
 #include "controller_state.h"
+#include "timer.h"
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
@@ -22,8 +23,9 @@ controller_state_new(struct controller_state_s *s)
 
   cs = malloc(sizeof(*cs));
   cs->s = malloc(sizeof(struct controller_state_s));
-  memcpy(cs->s, s, sizeof(struct controller_state_s));
   pthread_mutex_init(&cs->m, NULL);
+
+  controller_state_set(cs, s);
 
   return cs;
 }
@@ -41,6 +43,7 @@ controller_state_set(controller_state_t cs, struct controller_state_s *s)
 {
   pthread_mutex_lock(&cs->m);
   memcpy(cs->s, s, sizeof(struct controller_state_s));
+  timer_get_elapsed_ms(&cs->s->last_updated);
   pthread_mutex_unlock(&cs->m);
 }
 

@@ -9,6 +9,7 @@ struct controller_state_s {
   char question[128];
   unsigned int num_buzzed;
   int buzzed[WIIMOTES_MAX_NUM];
+  unsigned long last_updated;
 };
 
 typedef struct controller_state_s2 * controller_state_t;
