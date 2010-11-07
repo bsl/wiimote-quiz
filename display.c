@@ -13,14 +13,11 @@
 void *
 display_run(void *v)
 {
-  struct display_run_args *args;
-  ending_t ending;
-  controller_state_t cs;
+  struct display_run_args *d_args = v;
+  ending_t ending                 = d_args->ending;
+  controller_state_t cs           = d_args->cs;
 
-  args = v;
-
-  ending = args->ending;
-  cs     = args->cs;
+  (void)cs;
 
   while (1) {
     if (ending_get(ending)) {

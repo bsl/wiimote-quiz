@@ -45,25 +45,19 @@ static void handle_lowlevel_command(const struct lowlevel_command *llc, wiimotes
 void *
 wiimotes_run(void *v)
 {
-  struct wiimotes_run_args *args;
+  struct wiimotes_run_args *w_args = v;
+  ending_t ending                  = w_args->ending;
+  unsigned int max_num_wiimotes    = w_args->max_num_wiimotes;
+  unsigned int find_time_in_sec    = w_args->find_time_in_sec;
+  rqueue_t buttonsq                = w_args->buttonsq;
+  rqueue_t hlcommandsq             = w_args->hlcommandsq;
+
   wiimotes_t w;
-  rqueue_t buttonsq, hlcommandsq;
   llcmdqueue_t llcommandsq;
-  int i, num_events;
-  unsigned int max_num_wiimotes;
-  unsigned int find_time_in_sec;
-  ending_t ending;
-  unsigned long t;
   struct highlevel_command *hlc;
   struct lowlevel_command *llc;
-  unsigned long when_to_send;
-
-  args = v;
-  ending           = args->ending;
-  max_num_wiimotes = args->max_num_wiimotes;
-  find_time_in_sec = args->find_time_in_sec;
-  buttonsq         = args->buttonsq;
-  hlcommandsq      = args->hlcommandsq;
+  int i, num_events;
+  unsigned long t, when_to_send;
 
   /* Initialize command queue
    */

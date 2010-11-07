@@ -26,16 +26,12 @@ static void rumble(struct button_event *b, rqueue_t hlcommandsq);
 void *
 controller_run(void *v)
 {
-  struct controller_run_args *args;
-  rqueue_t buttonsq, hlcommandsq;
-  ending_t ending;
+  struct controller_run_args *c_args = v;
+  ending_t ending                    = c_args->ending;
+  rqueue_t buttonsq                  = c_args->buttonsq;
+  rqueue_t hlcommandsq               = c_args->hlcommandsq;
+
   struct button_event *b;
-
-  args = v;
-
-  ending      = args->ending;
-  buttonsq    = args->buttonsq;
-  hlcommandsq = args->hlcommandsq;
 
   while (1) {
     while (!rqueue_is_empty(buttonsq)) {
