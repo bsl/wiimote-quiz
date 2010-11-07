@@ -224,12 +224,14 @@ handle_highlevel_command(const struct highlevel_command *hlc, llcmdqueue_t llcom
   switch (hlc->type) {
     case HIGHLEVEL_COMMAND_FLASH:  /* XXX ignoring pattern_num parameter for now */
       timer_get_elapsed_ms(&t);
+      int all_leds_on = WIIMOTE_LED_1 | WIIMOTE_LED_2 | WIIMOTE_LED_3 | WIIMOTE_LED_4;
 
-      set_leds_by_bits(hlc->wiimote_num, llcommandsq, t,      0); /* turn all leds off */
-      set_leds_by_bits(hlc->wiimote_num, llcommandsq, t+150, 15); /* turn all leds on  */
-      set_leds_by_bits(hlc->wiimote_num, llcommandsq, t+300,  0); /* turn all leds off */
-      set_leds_by_bits(hlc->wiimote_num, llcommandsq, t+450, 15); /* turn all leds on  */
-      set_leds_by_wiimote_num(hlc->wiimote_num, llcommandsq, t+600); /* set it back */
+      set_leds_by_bits(hlc->wiimote_num, llcommandsq, t,     0);           /* turn all leds off */
+      set_leds_by_bits(hlc->wiimote_num, llcommandsq, t+100, all_leds_on); /* turn all leds on  */
+      set_leds_by_bits(hlc->wiimote_num, llcommandsq, t+200, 0);           /* turn all leds off */
+      set_leds_by_bits(hlc->wiimote_num, llcommandsq, t+300, all_leds_on); /* turn all leds on  */
+      set_leds_by_bits(hlc->wiimote_num, llcommandsq, t+400, 0);           /* turn all leds off */
+      set_leds_by_wiimote_num(hlc->wiimote_num, llcommandsq, t+500);       /* set it back */
 
       break;
 
@@ -242,6 +244,11 @@ handle_highlevel_command(const struct highlevel_command *hlc, llcmdqueue_t llcom
       llcmdqueue_add(llcommandsq, llc, t);
 
       /* turn rumble off */
+      llc                           = lowlevel_command_new(hlc->wiimote_num, LOWLEVEL_COMMAND_RUMBLE);
+      llc->parameters.rumble.active = false;
+      llcmdqueue_add(llcommandsq, llc, t+400);
+
+      /* XXX turn rumble off again for safety */
       llc                           = lowlevel_command_new(hlc->wiimote_num, LOWLEVEL_COMMAND_RUMBLE);
       llc->parameters.rumble.active = false;
       llcmdqueue_add(llcommandsq, llc, t+500);
