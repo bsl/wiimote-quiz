@@ -15,10 +15,12 @@ display_run(void *v)
 {
   struct display_run_args *args;
   ending_t ending;
+  controller_state_t cs;
 
   args = v;
 
   ending = args->ending;
+  cs     = args->cs;
 
   while (1) {
     if (ending_get(ending)) {

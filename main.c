@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 #include <stdarg.h>
 #include <unistd.h>
 #include <signal.h>
@@ -12,6 +13,7 @@
 #include <wiiuse.h>
 
 #include "controller.h"
+#include "controller_state.h"
 #include "debug.h"
 #include "display.h"
 #include "ending.h"
@@ -30,6 +32,7 @@ static void handle_sigint(int);
 struct {
   ending_t ending;
   rqueue_t buttonsq, hlcommandsq;
+  controller_state_t cs;
   pthread_t threads[3];
 } g;
 
@@ -63,8 +66,13 @@ main(int argc, char **argv)
   w_args.hlcommandsq      = g.hlcommandsq;
   pthread_create(&g.threads[1], NULL, wiimotes_run, &w_args);
 
+  struct controller_state_s s;
+  memset(&s, 0, sizeof(s));
+  g.cs = controller_state_new(&s);
+
   /* start display thread */
-  d_args.ending           = g.ending;
+  d_args.ending = g.ending;
+  d_args.cs     = g.cs;
   pthread_create(&g.threads[2], NULL, display_run, &d_args);
 
   if (!install_SIGINT_handler()) {
@@ -125,6 +133,7 @@ handle_sigint(int signum)
   ending_free(g.ending);
   rqueue_free(g.buttonsq);
   rqueue_free(g.hlcommandsq);
+  controller_state_free(g.cs);
 
   print_info("SIGINT handler exiting");
   exit(EXIT_SUCCESS);
