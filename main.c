@@ -24,12 +24,7 @@
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
-static int install_SIGINT_handler(void);
-static void handle_sigint(int);
-
-/* - - - - - - - - - - - - - - - - - - - - */
-
-struct {
+static struct {
   ending_t ending;
   rqueue_t buttonsq, hlcommandsq;
   controller_state_t cs;
@@ -47,6 +42,14 @@ main(int argc, char **argv)
 
   (void)argc;
   (void)argv;
+
+  sigset_t sigs;
+  sigfillset(&sigs);
+  pthread_sigmask(SIG_BLOCK, &sigs, NULL);
+
+  if (!timer_init()) {
+    return EXIT_FAILURE;
+  }
 
   g.ending      = ending_new(false);
   g.buttonsq    = rqueue_new();
@@ -75,66 +78,34 @@ main(int argc, char **argv)
   d_args.cs     = g.cs;
   pthread_create(&g.threads[2], NULL, display_run, &d_args);
 
-  if (!install_SIGINT_handler()) {
-    return EXIT_FAILURE;
-  }
-
-  if (!timer_init()) {
-    return EXIT_FAILURE;
-  }
+  /* wait for ctrl-c */
+  sigemptyset(&sigs);
+  sigaddset(&sigs, SIGINT);
+  int sig;
 
   while (1) {
-    unsigned long ms;
+    sigwait(&sigs, &sig);
+    if (sig == SIGINT) {
+      ending_set(g.ending, true);
 
-    sleep(5);
+      int i;
+      int num_threads = sizeof(g.threads) / sizeof(pthread_t);
 
-    if (timer_get_elapsed_ms(&ms)) {
-      print_info("%ld ms elapsed", ms);
+      for (i=0; i<num_threads; i++) {
+        pthread_join(g.threads[i], NULL);
+        print_info("thread %d finished", i);
+      }
+
+      ending_free(g.ending);
+      rqueue_free(g.buttonsq);
+      rqueue_free(g.hlcommandsq);
+      controller_state_free(g.cs);
+
+      break;
     }
   }
 
+  print_info("main exiting");
+
   return EXIT_SUCCESS;
-}
-
-/* - - - - - - - - - - - - - - - - - - - - */
-
-static int
-install_SIGINT_handler(void)
-{
-  print_info("installing SIGINT handler");
-  if (signal(SIGINT, handle_sigint) == SIG_ERR) {
-    print_info("signal: %s", strerror(errno));
-    return 0;
-  }
-
-  print_info("SIGINT handler installed");
-  return 1;
-}
-
-static void
-handle_sigint(int signum)
-{
-  int i, num_threads;
-
-  (void)signum;
-
-  print_info("SIGINT handler cleaning up");
-
-  /* tell all threads to end */
-  ending_set(g.ending, true);
-
-  num_threads = sizeof(g.threads) / sizeof(pthread_t);
-  print_info("num_threads = %d", num_threads);
-  for (i=0; i<num_threads; i++) {
-    print_info("joining thread %d", i);
-    pthread_join(g.threads[i], NULL);
-  }
-
-  ending_free(g.ending);
-  rqueue_free(g.buttonsq);
-  rqueue_free(g.hlcommandsq);
-  controller_state_free(g.cs);
-
-  print_info("SIGINT handler exiting");
-  exit(EXIT_SUCCESS);
 }
