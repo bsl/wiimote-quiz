@@ -93,7 +93,6 @@ main(int argc, char **argv)
 
       for (i=0; i<num_threads; i++) {
         pthread_join(g.threads[i], NULL);
-        print_info("thread %d finished", i);
       }
 
       ending_free(g.ending);

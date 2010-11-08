@@ -118,6 +118,8 @@ wiimotes_run(void *v)
 
   deinit(w);
 
+  print_info("wiimotes exiting");
+
   return NULL;
 }
 

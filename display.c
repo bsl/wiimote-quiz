@@ -54,6 +54,8 @@ display_run(void *v)
 
   graphics_deinit();
 
+  print_info("display exiting");
+
   return NULL;
 }
 

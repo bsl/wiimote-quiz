@@ -47,6 +47,8 @@ controller_run(void *v)
     usleep(10000);
   }
 
+  print_info("controller exiting");
+
   return NULL;
 }
 
