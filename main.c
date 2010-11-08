@@ -55,28 +55,35 @@ main(int argc, char **argv)
   g.buttonsq    = rqueue_new();
   g.hlcommandsq = rqueue_new();
 
-  /* start controller thread */
+  /* controller thread arguments */
   c_args.ending      = g.ending;
   c_args.buttonsq    = g.buttonsq;
   c_args.hlcommandsq = g.hlcommandsq;
-  pthread_create(&g.threads[0], NULL, controller_run, &c_args);
 
-  /* start wiimotes thread */
+  /* wiimote thread arguments */
   w_args.ending           = g.ending;
   w_args.max_num_wiimotes = WIIMOTES_MAX_NUM;
   w_args.find_time_in_sec = WIIMOTES_FIND_TIME_IN_SEC;
   w_args.buttonsq         = g.buttonsq;
   w_args.hlcommandsq      = g.hlcommandsq;
-  pthread_create(&g.threads[1], NULL, wiimotes_run, &w_args);
+
+  /* display thread arguments */
+  d_args.ending = g.ending;
+  d_args.cs     = g.cs;
 
   struct controller_state_s s;
   memset(&s, 0, sizeof(s));
   g.cs = controller_state_new(&s);
 
+  /* start controller thread */
+  pthread_create(&g.threads[0], NULL, controller_run, &c_args);
+
+  /* start wiimotes thread */
+  pthread_create(&g.threads[1], NULL, wiimotes_run, &w_args);
+
   /* start display thread */
-  d_args.ending = g.ending;
-  d_args.cs     = g.cs;
   pthread_create(&g.threads[2], NULL, display_run, &d_args);
+
 
   /* wait for ctrl-c */
   sigemptyset(&sigs);
@@ -88,10 +95,9 @@ main(int argc, char **argv)
     if (sig == SIGINT) {
       ending_set(g.ending, true);
 
-      int i;
       int num_threads = sizeof(g.threads) / sizeof(pthread_t);
 
-      for (i=0; i<num_threads; i++) {
+      for (int i=0; i<num_threads; i++) {
         pthread_join(g.threads[i], NULL);
       }
 
@@ -105,6 +111,11 @@ main(int argc, char **argv)
   }
 
   print_info("main exiting");
+
+  ending_free(g.ending);
+  rqueue_free(g.buttonsq);
+  rqueue_free(g.hlcommandsq);
+  controller_state_free(g.cs);
 
   return EXIT_SUCCESS;
 }

@@ -7,7 +7,6 @@
 #include <signal.h>
 #include <errno.h>
 
-#include <pthread.h>
 #include <wiiuse.h>
 
 #include "button_event.h"
@@ -75,7 +74,7 @@ wiimotes_run(void *v)
     num_events = wiiuse_poll(w->wiimotes, w->size);
     for (i=0; num_events>0 && i<w->size; i++) {
       if (w->wiimotes[i]->event == WIIUSE_EVENT) {
-        handle_button_event(w, i, buttonsq);
+        handle_button_event(w, w->wiimotes[i]->unid, buttonsq);
         num_events--;
       }
     }
@@ -96,6 +95,7 @@ wiimotes_run(void *v)
       when_to_send = llcmdqueue_peek_key(llcommandsq);
       if (when_to_send <= t) {
         llc = llcmdqueue_remove(llcommandsq);
+        print_info("DEQUEUED LLC @ %ld", when_to_send);
         handle_lowlevel_command(llc, w);
         lowlevel_command_free(llc);
       } else {
@@ -104,6 +104,7 @@ wiimotes_run(void *v)
     }
 
     if (ending_get(ending)) {
+      print_info("wimotes thread ending");
       break;
     }
 
@@ -190,14 +191,10 @@ calc_leds_by_bits(int bits)
 }
 
 static void
-handle_button_event(wiimotes_t w, int n, rqueue_t buttonsq)
+handle_button_event(wiimotes_t w, int wiimote_num, rqueue_t buttonsq)
 {
-  struct wiimote_t *wm;
-  int id;
-
-  wm = w->wiimotes[n];
-  id = wm->unid;
-
+  wiimote *wm = wiiuse_get_by_id(w->wiimotes, w->size, wiimote_num);
+  int id = wm->unid;
   if (IS_PRESSED(wm, WIIMOTE_BUTTON_A))     add_button_event(buttonsq, id, WIIMOTE_BUTTON_A);
   if (IS_PRESSED(wm, WIIMOTE_BUTTON_B))     add_button_event(buttonsq, id, WIIMOTE_BUTTON_B);
   if (IS_PRESSED(wm, WIIMOTE_BUTTON_UP))    add_button_event(buttonsq, id, WIIMOTE_BUTTON_UP);
@@ -265,24 +262,21 @@ handle_highlevel_command(const struct highlevel_command *hlc, llcmdqueue_t llcom
 static void
 handle_lowlevel_command(const struct lowlevel_command *llc, wiimotes_t w)
 {
-  int wmidx = llc->wiimote_num - 1;
+  wiimote *wm = wiiuse_get_by_id(w->wiimotes, w->size, llc->wiimote_num);
 
-  if (wmidx < 0 || wmidx >= w->size) {
-    print_info("bad wiimote index: %d  w->size:%d", wmidx, w->size);
-  } else {
-    struct wiimote_t *wm = w->wiimotes[wmidx];
+  switch (llc->type) {
+    case LOWLEVEL_COMMAND_SET_LEDS:
+      print_info("LOWLEVEL_COMMAND_SET_LEDS %d -> %d", llc->parameters.set_leds.leds, llc->wiimote_num);
+      wiiuse_set_leds(wm, llc->parameters.set_leds.leds);
+      break;
 
-    switch (llc->type) {
-      case LOWLEVEL_COMMAND_SET_LEDS:
-        wiiuse_set_leds(wm, llc->parameters.set_leds.leds);
-        break;
+    case LOWLEVEL_COMMAND_RUMBLE:
+      print_info("LOWLEVEL_COMMAND_RUMBLE %d -> %d", llc->parameters.rumble.active, llc->wiimote_num);
+      wiiuse_rumble(wm, llc->parameters.rumble.active ? 1 : 0);
+      break;
 
-      case LOWLEVEL_COMMAND_RUMBLE:
-        wiiuse_rumble(wm, llc->parameters.rumble.active ? 1 : 0);
-        break;
-
-      case LOWLEVEL_COMMAND_UNKNOWN:
-        break;
-    }
+    case LOWLEVEL_COMMAND_UNKNOWN:
+      print_info("LOWLEVEL_COMMAND_UNKNOWN -> %d");
+      break;
   }
 }

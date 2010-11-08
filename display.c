@@ -4,9 +4,7 @@
 #include <unistd.h>
 
 #include <SDL/SDL.h>
-#if 0
-#include <SFML/Graphics.h>
-#endif
+#include <GL/gl.h>
 
 #include "controller.h"
 #include "controller_state.h"
@@ -16,20 +14,15 @@
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
-struct {
+static struct {
   SDL_Surface *surface;
 } g;
-
-#if 0
-struct {
-  sfRenderWindow *window;
-} g;
-#endif
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
 static void graphics_init(void);
 static void graphics_deinit(void);
+static void draw_display(void);
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
@@ -49,7 +42,9 @@ display_run(void *v)
       break;
     }
 
-    usleep(10000);
+    SDL_Delay(100);
+    draw_display();
+    print_info("display looping");
   }
 
   graphics_deinit();
@@ -61,39 +56,22 @@ display_run(void *v)
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
+static void draw_display(void) {
+  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+  SDL_GL_SwapBuffers();
+}
+
+/* - - - - - - - - - - - - - - - - - - - - */
+
 void graphics_init(void)
 {
   SDL_Init(SDL_INIT_VIDEO);
-  g.surface = SDL_SetVideoMode(640, 480, 8, SDL_OPENGL);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  g.surface = SDL_SetVideoMode(640, 480, 24, SDL_OPENGL);
 }
 
 void graphics_deinit(void)
 {
   SDL_Quit();
 }
-
-#if 0
-void graphics_init(void)
-{
-  sfVideoMode video_mode = {
-    .Width        = 320,
-    .Height       = 480,
-    .BitsPerPixel = 32
-  };
-
-  sfWindowSettings window_settings = {
-    .DepthBits         = 24,
-    .StencilBits       = 8,
-    .AntialiasingLevel = 2
-  };
-
-  g.window = sfRenderWindow_Create(video_mode, "quiz", sfResize | sfClose, window_settings);
-  sfRenderWindow_Clear(g.window, sfBlack);
-}
-
-void graphics_deinit(void)
-{
-  sfRenderWindow_Close(g.window);
-  sfRenderWindow_Destroy(g.window);
-}
-#endif
