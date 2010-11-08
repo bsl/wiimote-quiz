@@ -3,10 +3,10 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#if 0
 #include <SDL/SDL.h>
-#endif
+#if 0
 #include <SFML/Graphics.h>
+#endif
 
 #include "controller.h"
 #include "controller_state.h"
@@ -16,15 +16,15 @@
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
-#if 0
 struct {
   SDL_Surface *surface;
 } g;
-#endif
 
+#if 0
 struct {
   sfRenderWindow *window;
 } g;
+#endif
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
@@ -59,7 +59,6 @@ display_run(void *v)
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
-#if 0
 void graphics_init(void)
 {
   SDL_Init(SDL_INIT_VIDEO);
@@ -70,8 +69,8 @@ void graphics_deinit(void)
 {
   SDL_Quit();
 }
-#endif
 
+#if 0
 void graphics_init(void)
 {
   sfVideoMode video_mode = {
@@ -95,3 +94,4 @@ void graphics_deinit(void)
   sfRenderWindow_Close(g.window);
   sfRenderWindow_Destroy(g.window);
 }
+#endif

@@ -8,8 +8,8 @@ sources = $(wildcard *.c)
 headers = $(wildcard *.h)
 objects = $(patsubst %.c,%.o,$(sources))
 
-libraries = -lwiiuse -lpthread -lrt -lcsfml-graphics
-#libraries = -lwiiuse -lpthread -lrt -lSDL
+#libraries = -lwiiuse -lpthread -lrt -lcsfml-graphics
+libraries = -lwiiuse -lpthread -lrt -lSDL
 
 all: $(target)
 
